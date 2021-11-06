@@ -6,7 +6,6 @@ from .models import Poll
 from .serializers import PollSerializer
 from .custom_responses import (prepare_success_response, prepare_error_response,
                                     prepare_create_success_response)
-from .validation_service import validate_poll_data
 
 
 class PollAPIView(APIView):
@@ -18,11 +17,7 @@ class PollAPIView(APIView):
 
 
     def post(self, request):
-       # validate_error = validate_poll_data(request.data)
-        #if validate_error is not None:
-           # return Response(prepare_error_response(validate_error), status=status.HTTP_400_BAD_REQUEST)
         serializer = PollSerializer(data=request.data)
-        print("Working")
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(prepare_create_success_response(serializer.data), status=status.HTTP_201_CREATED)
@@ -30,3 +25,25 @@ class PollAPIView(APIView):
 
 
 
+class PollDetailsUpdateDeleteView(APIView):
+
+    def get_object(self, pk):
+        try:
+            return Poll.objects.get(pk=pk)
+        except Poll.DoesNotExist:
+            raise None
+    
+    def get(self, request, pk):
+        poll = self.get_object(pk)
+        serializer = PollSerializer(poll)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        pass
+    
+    def delete(self, request, pk):
+        poll = self.get_object(pk)
+        if poll is not None:
+            poll.delete()
+            return Response(prepare_success_response("Data deleted successfully"), status=status.HTTP_200_OK)
+        return Response(prepare_error_response("Content Not found"), status=status.HTTP_400_BAD_REQUEST)
