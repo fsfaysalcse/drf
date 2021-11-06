@@ -12,7 +12,7 @@ The following steps will walk you thru installation on a Mac. Linux should be si
 ```
 https://github.com/fsfaysalcse/drf.git
 cd drf
-virtualenv venv --python=python3.6
+virtualenv venv --python=python3.9
 source venv/bin/activate
 pip install -r requirements.txt
 ./manage.py migrate
